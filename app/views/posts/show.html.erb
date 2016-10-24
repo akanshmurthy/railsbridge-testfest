@@ -5,9 +5,11 @@
       <br>
       Post title: <%= @post.title %>
       <br>
+      <br>
       Post content: <%= @post.content %>
       <br>
-      Post comments:
+      <br>
+      Post replies:
       <br>
       <% @post.replies.each do |reply| %>
         <%= reply.body %> by
@@ -15,8 +17,11 @@
         <%= reply.created_at %>
         <br>
       <% end %>
+      <br>
       <%= button_to 'Edit', edit_post_path, :method => :get %>
+      <br>
       <%= button_to 'Destroy', post_path, :confirm => 'Are you sure?', :method => :delete %>
+      <br>
       <%= button_to 'Reply', new_post_reply_path(@post.id), :method => :get %>
     </div>
   </div>

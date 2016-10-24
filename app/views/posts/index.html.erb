@@ -5,8 +5,8 @@
       <br>
       <table class="table">
         <% @posts.each do |post| %>
-          <tr><a href="<%= post_url(post.id) %>"><%= post.title %></a></tr>
-          <tr><%= find_user_email(post.user_id) %></tr>
+          <tr><a href="<%= post_url(post.id) %>"><%= post.title %></a></tr> by
+          <tr><%= find_user_email(post.user_id) %></tr> at 
           <tr><%= post.created_at %></tr>
           <br>
         <% end %>
