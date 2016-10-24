@@ -1,0 +1,22 @@
+<div id="header">
+  <div class="container">
+    <div class="row">
+      <h1>Add a new post</h1>
+      <br>
+      <%= form_for @post do |form| %>
+        <p>
+          <%= form.label :title, "Title:" %>
+          <%= form.text_field :title %>
+          <!-- make this field required -->
+        </p>
+        <p>
+          <%= form.label :content, "Content:" %>
+          <%= form.text_field :content %>
+        </p>
+        <p class='buttons'>
+          <%= form.submit "Add post" %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+</div>

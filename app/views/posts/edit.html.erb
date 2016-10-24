@@ -1,0 +1,21 @@
+<div id="header">
+  <div class="container">
+    <div class="row">
+      <h1>Edit an existing post</h1>
+      <br>
+      <%= form_for @post do |form| %>
+        <p>
+          <%= form.label :title, "Title:" %>
+          <%= form.text_field :title %>
+        </p>
+        <p>
+          <%= form.label :content, "Content:" %>
+          <%= form.text_field :content %>
+        </p>
+        <p class='buttons'>
+          <%= form.submit "Edit event" %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+</div>

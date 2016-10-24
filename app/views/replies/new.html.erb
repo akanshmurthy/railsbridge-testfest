@@ -1,0 +1,18 @@
+<div id="header">
+  <div class="container">
+    <div class="row">
+      <h1>Replying to <%= @post.title %></h1>
+      <br>
+      <%= form_for @reply, url: post_replies_path do |form| %>
+        <p>
+          <%= form.label :body, "Body:" %>
+          <%= form.text_field :body %>
+          <!-- make this field required -->
+        </p>
+        <p class='buttons'>
+          <%= form.submit "Add reply" %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+</div>

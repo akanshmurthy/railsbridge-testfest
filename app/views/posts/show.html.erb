@@ -1,0 +1,23 @@
+<div id="header">
+  <div class="container">
+    <div class="row">
+      <h1> Post </h1>
+      <br>
+      Post title: <%= @post.title %>
+      <br>
+      Post content: <%= @post.content %>
+      <br>
+      Post comments:
+      <br>
+      <% @post.replies.each do |reply| %>
+        <%= reply.body %> by
+        <%= find_user_email(reply.user_id) %> at
+        <%= reply.created_at %>
+        <br>
+      <% end %>
+      <%= button_to 'Edit', edit_post_path, :method => :get %>
+      <%= button_to 'Destroy', post_path, :confirm => 'Are you sure?', :method => :delete %>
+      <%= button_to 'Reply', new_post_reply_path(@post.id), :method => :get %>
+    </div>
+  </div>
+</div>
