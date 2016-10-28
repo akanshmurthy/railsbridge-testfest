@@ -36,6 +36,14 @@ RSpec.describe Post, type: :model do
       expect(Post.reflect_on_association(:user).plural_name).to eq ("users")
     end
 
+    it 'Post has_many replies' do
+      expect(Post.reflect_on_association(:replies).macro).to be (:has_many)
+    end
+
+    it 'Post has replies in plural_name' do
+      expect(Post.reflect_on_association(:replies).plural_name).to eq ("replies")
+    end
+
   end
 
 
