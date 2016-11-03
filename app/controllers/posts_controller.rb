@@ -14,17 +14,30 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = Post.new(post_params)
+    @post = Post.new(post_params.permit(:title, :content))
     @post.user_id = current_user.id
     if @post.save
-      # Here is a potential place to add Twilio API call to send text messages 
+      # Here is a potential place to add Twilio API call to send text messages
 
+      # If a file was uploaded, we expect its IO stream to be in params[:post][:image], and
+      # will store it in Cloudinary
+      if post_params[:image].present?
+        auth = {
+          cloud_name: Rails.application.secrets.cloudinary_cloud_name,
+          api_key:    Rails.application.secrets.cloudinary_api_key,
+          api_secret: Rails.application.secrets.cloudinary_api_secret
+        }
+        
+        #cl_resp = Cloudinary::Uploader.upload(params[:post][:image], auth)
+      end
+      
       # Construct the API URL here, taking care to use Rails.application.secrets.bitly_api_key and
       # Rails.application.secrets.bitly_username, for the login, and Rails route helpers the post's url
       bitly_url = "http://api.bitly.com/..."
 
-      # You can use a simple get call via Net::HTTP like this, once the URL is constructed
-      resp = JSON.parse(Net::HTTP.get URI(bitly_url))
+      # Once the URL is constructed, you can use the simple GET call below, via the Net::HTTP library, to pass the test.
+      # resp = JSON.parse(Net::HTTP.get URI(bitly_url))
+
       redirect_to posts_url
     else
       render @post.errors.full_messages
@@ -37,7 +50,7 @@ class PostsController < ApplicationController
 
   def update
     @post = Post.find(params[:id])
-    if @post.update_attributes(post_params)
+    if @post.update_attributes(post_params.permit(:title, :content))
       flash[:success] = "Post updated"
       redirect_to @post
     else
@@ -59,6 +72,6 @@ class PostsController < ApplicationController
   private
 
   def post_params
-    params.require(:post).permit(:title, :content)
+    params.require(:post).permit(:title, :content, :image)
   end
 end
