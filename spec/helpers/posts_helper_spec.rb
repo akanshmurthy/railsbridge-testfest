@@ -5,7 +5,7 @@ describe PostsHelper do
     let(:user) { User.new( email: 'user@gmail.com',password: 'shhhhh!') }
     it "returns an email" do
       user.save
-      helper.find_user_email(user.id).should eq("user@gmail.com")
+      expect(helper.find_user_email(user.id)).to eq("user@gmail.com")
     end
 
     it "initiates a Twilio client" do

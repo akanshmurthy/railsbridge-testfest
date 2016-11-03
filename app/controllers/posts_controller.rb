@@ -17,7 +17,14 @@ class PostsController < ApplicationController
     @post = Post.new(post_params)
     @post.user_id = current_user.id
     if @post.save
-      # here is a potential place to add Twilio API call to send text messages 
+      # Here is a potential place to add Twilio API call to send text messages 
+
+      # Construct the API URL here, taking care to use Rails.application.secrets.bitly_api_key and
+      # Rails.application.secrets.bitly_username, for the login, and Rails route helpers the post's url
+      bitly_url = "http://api.bitly.com/..."
+
+      # You can use a simple get call via Net::HTTP like this, once the URL is constructed
+      resp = JSON.parse(Net::HTTP.get URI(bitly_url))
       redirect_to posts_url
     else
       render @post.errors.full_messages
@@ -52,6 +59,6 @@ class PostsController < ApplicationController
   private
 
   def post_params
-    params.require(:post).permit(:title, :author, :content)
+    params.require(:post).permit(:title, :content)
   end
 end
