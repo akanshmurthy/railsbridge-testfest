@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe PostsController, type: :controller do
+  include Devise::Test::ControllerHelpers
+  
   describe "PostsController" do
     let(:posts) { [ Post.new(
       title: 'What is the difference between a cookie and a session?',
@@ -19,7 +21,6 @@ RSpec.describe PostsController, type: :controller do
       ) ] }
 
     describe '#index' do
-
       it "renders the index view" do
         get :index
         expect(response).to render_template("index")
@@ -89,5 +90,39 @@ RSpec.describe PostsController, type: :controller do
       end
     end
 
+    describe "#create" do
+      # users are defined in the spec/fixtures/ folder
+      fixtures :users
+      
+      it 'generates a Bitly call on successful save' do
+        # This test uses the Webmock gem, to test for outgoing API calls
+        sign_in users(:user_1)
+
+        # We need to mimic the API response of Bitly - this is an example response as shown at
+        # https://dev.bitly.com/links.html#v3_shorten
+        response = {
+          "data" => {
+            "global_hash" => "900913",
+            "hash"=> "ze6poY",
+            "long_url"=> "http://google.com/",
+            "new_hash"=> 0,
+            "url"=> "http://bit.ly/ze6poY"
+          },
+          "status_code"=> 200,
+          "status_txt"=> "OK"
+        }
+
+        # We expect that the code will generate this APi call.
+        stub_get = stub_request(:get, /api.bitly.com.v3.shorten.apiKey=testkey.login=testlogin.*\/posts\//).to_return(
+          status: 200, body: response.to_json)
+        
+        params = {post: ({content: 'hello world', title: 'this is great', author: 'railsb testf'})}
+
+        expect do
+          get :create, params
+        end.to change {Post.count}.by(1)
+        assert_requested stub_get
+      end
+    end
   end
 end
