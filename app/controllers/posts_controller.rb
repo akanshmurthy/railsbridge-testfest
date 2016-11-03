@@ -2,7 +2,7 @@ require 'posts_helper'
 
 class PostsController < ApplicationController
   include PostsHelper
-  
+
   def index
     @posts = Post.all
     render :index
@@ -17,6 +17,7 @@ class PostsController < ApplicationController
     @post = Post.new(post_params)
     @post.user_id = current_user.id
     if @post.save
+      # here is a potential place to add Twilio API call to send text messages 
       redirect_to posts_url
     else
       render @post.errors.full_messages
