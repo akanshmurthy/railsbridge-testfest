@@ -18,20 +18,19 @@ RSpec.describe RepliesController, type: :controller do
     describe '#new' do
 
       it "renders the new view" do
-        get :new, :post_id => post.id
+        get :new, params: {post_id: post.id}
         expect(response).to render_template("new")
       end
 
       it "assigns a new reply to @reply" do
-        get :new, :post_id => post.id
+        get :new, params: {post_id: post.id}
         expect(assigns(:reply)).to be_a_new(Reply)
       end
 
       it "renders html" do
-        get :new, :post_id => post.id
+        get :new, params: {post_id: post.id}
         expect(response.content_type).to eq "text/html"
       end
     end
-
   end
 end

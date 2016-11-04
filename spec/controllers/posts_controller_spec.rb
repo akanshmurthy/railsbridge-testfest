@@ -30,7 +30,7 @@ RSpec.describe PostsController, type: :controller do
       end
 
       it "renders html" do
-        get :index
+        process :index, method: :get
         expect(response.content_type).to eq "text/html"
       end
 
@@ -62,12 +62,12 @@ RSpec.describe PostsController, type: :controller do
         ) ] }
 
       it "renders the show view" do
-        get :show, id: created_post
+        get :show, params: {id: created_post}
         expect(response).to render_template("show")
       end
 
       it "assigns a new post to @post" do
-        get :show, id: created_post
+        get :show, params: {id: created_post}
         expect(assigns(:post)).to eq(created_post)
       end
     end
@@ -83,12 +83,12 @@ RSpec.describe PostsController, type: :controller do
 
       it "should delete the post" do
         expect{
-          delete :destroy, id: @deleted_post
+          process :destroy, method: :delete, params: {id: @deleted_post}
         }.to change(Post,:count).by(-1)
       end
 
       it "should redirect to posts index" do
-        delete :destroy, id: @deleted_post
+        process :destroy, method: :delete, params: {id: @deleted_post}
         expect(response).to redirect_to posts_url
       end
     end
@@ -128,7 +128,7 @@ RSpec.describe PostsController, type: :controller do
                           image: file_io})}
 
         expect do
-          get :create, params
+          get :create, params: params
         end.to change {Post.count}.by(1)
         assert_requested stub_cl_post        
       end
@@ -156,7 +156,7 @@ RSpec.describe PostsController, type: :controller do
         params = {post: ({content: 'hello world', title: 'this is great'})}
 
         expect do
-          get :create, params
+          get :create, params: params
         end.to change {Post.count}.by(1)
         assert_requested stub_get
       end
