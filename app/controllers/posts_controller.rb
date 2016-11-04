@@ -36,6 +36,10 @@ class PostsController < ApplicationController
       bitly_url = "http://api.bitly.com/..."
 
       # Once the URL is constructed, you can use the simple GET call below, via the Net::HTTP library, to pass the test.
+      # Note that in general, when using Net::HTTP, you have to think about handling all of its possible exceptions. An
+      # easier option might be to investigate the use of a Bitly gem, for example, https://github.com/philnash/bitly
+      # which abstracts out errors for you in a more readable way.
+      
       # resp = JSON.parse(Net::HTTP.get URI(bitly_url))
 
       redirect_to posts_url
