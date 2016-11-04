@@ -2,6 +2,9 @@ require 'rails_helper'
 
 RSpec.describe PostsController, type: :controller do
   include Devise::Test::ControllerHelpers
+
+  # This is needed to simulate a file upload in the #create/Cloudinary test
+  include ActionDispatch::TestProcess
   
   describe "PostsController" do
     let(:posts) { [ Post.new(
@@ -93,11 +96,45 @@ RSpec.describe PostsController, type: :controller do
     describe "#create" do
       # users are defined in the spec/fixtures/ folder
       fixtures :users
+
+      before do
+        # Creation requires a signed in user
+        sign_in users(:user_1)
+      end
+
+      it 'generates a Cloudinary call if an image is uploaded' do
+        # This response format is documented at http://cloudinary.com/documentation/rails_image_upload
+        response = {
+          "public_id" => "pjxlnrigoijmmeibdi0u",
+          "version" => 1371750447,
+          "signature" => "bfec72b23487654e964febf8b89fe5f4ce796c8c",
+          "width" => 864,
+          "height" => 576,
+          "format" => "jpg",
+          "resource_type" => "image",
+          "created_at" => "2013-06-20T17:47:27Z",
+          "bytes" => 120253,
+          "type" => "upload",
+          "url" =>
+          "http://res.cloudinary.com/demo/image/upload/v1371750447/pjxlnrigoijmmeibdi0u.jpg",
+          "secure_url"=>
+          "https://res.cloudinary.com/demo/image/upload/v1371750447/pjxlnrigoijmmeibdi0u.jpg"
+        }
+        stub_cl_post = stub_request(:post, /cloudinary.com/).to_return(
+          status: 200, body: response.to_json)
+
+        file_io = fixture_file_upload 'files/bridgetroll.svg', 'image/svg'
+        params = {post: ({content: 'hello world', title: 'this is great',
+                          image: file_io})}
+
+        expect do
+          get :create, params
+        end.to change {Post.count}.by(1)
+        assert_requested stub_cl_post        
+      end
       
       it 'generates a Bitly call on successful save' do
         # This test uses the Webmock gem, to test for outgoing API calls
-        sign_in users(:user_1)
-
         # We need to mimic the API response of Bitly - this is an example response as shown at
         # https://dev.bitly.com/links.html#v3_shorten
         response = {
@@ -116,7 +153,7 @@ RSpec.describe PostsController, type: :controller do
         stub_get = stub_request(:get, /api.bitly.com.v3.shorten.apiKey=testkey.login=testlogin.*\/posts\//).to_return(
           status: 200, body: response.to_json)
         
-        params = {post: ({content: 'hello world', title: 'this is great', author: 'railsb testf'})}
+        params = {post: ({content: 'hello world', title: 'this is great'})}
 
         expect do
           get :create, params
