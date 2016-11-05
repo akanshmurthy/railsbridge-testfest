@@ -14,8 +14,10 @@ describe PostsHelper do
     end
 
     it "sends a text" do
-      @number = 1234567890 #enter your phone number here
-      response = JSON.parse(helper.sent_text_to_user(@number))
+      client = helper.initiate_twilio_client
+
+      @number = '+12017350535' #enter your phone number here
+      response = JSON.parse(helper.sent_text_to_user(client))
       expect(response).to be_an_instance_of(Hash)
     end
   end
