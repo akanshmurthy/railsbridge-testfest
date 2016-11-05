@@ -5,7 +5,7 @@ RSpec.describe PostsController, type: :controller do
 
   # This is needed to simulate a file upload in the #create/Cloudinary test
   include ActionDispatch::TestProcess
-  
+
   describe "PostsController" do
     let(:posts) { [ Post.new(
       title: 'What is the difference between a cookie and a session?',
@@ -130,9 +130,9 @@ RSpec.describe PostsController, type: :controller do
         expect do
           get :create, params: params
         end.to change {Post.count}.by(1)
-        assert_requested stub_cl_post        
+        assert_requested stub_cl_post
       end
-      
+
       it 'generates a Bitly call on successful save' do
         # This test uses the Webmock gem, to test for outgoing API calls
         # We need to mimic the API response of Bitly - this is an example response as shown at
@@ -149,10 +149,11 @@ RSpec.describe PostsController, type: :controller do
           "status_txt"=> "OK"
         }
 
+
         # We expect that the code will generate this APi call.
-        stub_get = stub_request(:get, /api.bitly.com.v3.shorten.apiKey=testkey.login=testlogin.*\/posts\//).to_return(
+        stub_get = stub_request(:get, /https...api.ssl.bitly.com.v3.shorten.*/).to_return(
           status: 200, body: response.to_json)
-        
+
         params = {post: ({content: 'hello world', title: 'this is great'})}
 
         expect do
