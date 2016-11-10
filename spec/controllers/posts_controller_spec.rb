@@ -102,26 +102,42 @@ RSpec.describe PostsController, type: :controller do
         sign_in users(:user_1)
       end
 
+      cl_response = {
+        "public_id" => "pjxlnrigoijmmeibdi0u",
+        "version" => 1371750447,
+        "signature" => "bfec72b23487654e964febf8b89fe5f4ce796c8c",
+        "width" => 864,
+        "height" => 576,
+        "format" => "jpg",
+        "resource_type" => "image",
+        "created_at" => "2013-06-20T17:47:27Z",
+        "bytes" => 120253,
+        "type" => "upload",
+        "url" =>
+        "http://res.cloudinary.com/demo/image/upload/v1371750447/pjxlnrigoijmmeibdi0u.jpg",
+        "secure_url"=>
+        "https://res.cloudinary.com/demo/image/upload/v1371750447/pjxlnrigoijmmeibdi0u.jpg"
+      }
+      let!(:stub_cl_post) { stub_request(:post, /cloudinary.com/).to_return(
+        status: 200, body: cl_response.to_json) }
+
+      bt_response = {
+        "data" => {
+          "global_hash" => "900913",
+          "hash"=> "ze6poY",
+          "long_url"=> "http://google.com/",
+          "new_hash"=> 0,
+          "url"=> "http://bit.ly/ze6poY"
+        },
+        "status_code"=> 200,
+        "status_txt"=> "OK"
+      }
+      # We expect that the code will generate this APi call.
+      let!(:stub_bt_get) { stub_request(:get, /https...api.ssl.bitly.com.v3.shorten.*/).to_return(
+        status: 200, body: bt_response.to_json) }
+
       it 'generates a Cloudinary call if an image is uploaded' do
         # This response format is documented at http://cloudinary.com/documentation/rails_image_upload
-        response = {
-          "public_id" => "pjxlnrigoijmmeibdi0u",
-          "version" => 1371750447,
-          "signature" => "bfec72b23487654e964febf8b89fe5f4ce796c8c",
-          "width" => 864,
-          "height" => 576,
-          "format" => "jpg",
-          "resource_type" => "image",
-          "created_at" => "2013-06-20T17:47:27Z",
-          "bytes" => 120253,
-          "type" => "upload",
-          "url" =>
-          "http://res.cloudinary.com/demo/image/upload/v1371750447/pjxlnrigoijmmeibdi0u.jpg",
-          "secure_url"=>
-          "https://res.cloudinary.com/demo/image/upload/v1371750447/pjxlnrigoijmmeibdi0u.jpg"
-        }
-        stub_cl_post = stub_request(:post, /cloudinary.com/).to_return(
-          status: 200, body: response.to_json)
 
         file_io = fixture_file_upload 'files/bridgetroll.svg', 'image/svg'
         params = {post: ({content: 'hello world', title: 'this is great',
@@ -137,29 +153,13 @@ RSpec.describe PostsController, type: :controller do
         # This test uses the Webmock gem, to test for outgoing API calls
         # We need to mimic the API response of Bitly - this is an example response as shown at
         # https://dev.bitly.com/links.html#v3_shorten
-        response = {
-          "data" => {
-            "global_hash" => "900913",
-            "hash"=> "ze6poY",
-            "long_url"=> "http://google.com/",
-            "new_hash"=> 0,
-            "url"=> "http://bit.ly/ze6poY"
-          },
-          "status_code"=> 200,
-          "status_txt"=> "OK"
-        }
-
-
-        # We expect that the code will generate this APi call.
-        stub_get = stub_request(:get, /https...api.ssl.bitly.com.v3.shorten.*/).to_return(
-          status: 200, body: response.to_json)
 
         params = {post: ({content: 'hello world', title: 'this is great'})}
 
         expect do
           get :create, params: params
         end.to change {Post.count}.by(1)
-        assert_requested stub_get
+        assert_requested stub_bt_get
       end
     end
   end
