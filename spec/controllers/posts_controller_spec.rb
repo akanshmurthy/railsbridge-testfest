@@ -125,10 +125,11 @@ RSpec.describe PostsController, type: :controller do
 
         file_io = fixture_file_upload 'files/bridgetroll.svg', 'image/svg'
         params = {post: ({content: 'hello world', title: 'this is great',
-                          image: file_io})}
+                          image: file_io.path})}
 
         expect do
           get :create, params: params
+          file_io.unlink
         end.to change {Post.count}.by(1)
         assert_requested stub_cl_post
       end
