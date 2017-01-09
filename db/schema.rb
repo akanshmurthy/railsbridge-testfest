@@ -14,16 +14,15 @@ ActiveRecord::Schema.define(version: 20161024000508) do
 
   create_table "posts", force: :cascade do |t|
     t.string   "title"
-    t.integer  "user_id"
-    t.string   "content"
+    t.integer  "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "replies", force: :cascade do |t|
     t.string   "body"
-    t.integer  "post_id"
-    t.integer  "user_id"
+    t.string   "post_id"
+    t.string   "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
