@@ -5,7 +5,7 @@ class PostsController < ApplicationController
 
   def index
     @posts = Post.all
-    render :index
+    render :new
   end
 
   def new
@@ -27,10 +27,10 @@ class PostsController < ApplicationController
           api_key:    Rails.application.secrets.cloudinary_api_key,
           api_secret: Rails.application.secrets.cloudinary_api_secret
         }
-        
+
         #cl_resp = Cloudinary::Uploader.upload(params[:post][:image], auth)
       end
-      
+
       # Construct the API URL here, taking care to use Rails.application.secrets.bitly_api_key and
       # Rails.application.secrets.bitly_username, for the login, and Rails route helpers the post's url
       bitly_url = "http://api.bitly.com/..."
@@ -39,7 +39,7 @@ class PostsController < ApplicationController
       # Note that in general, when using Net::HTTP, you have to think about handling all of its possible exceptions. An
       # easier option might be to investigate the use of a Bitly gem, for example, https://github.com/philnash/bitly
       # which abstracts out errors for you in a more readable way.
-      
+
       # resp = JSON.parse(Net::HTTP.get URI(bitly_url))
 
       redirect_to posts_url
@@ -64,13 +64,12 @@ class PostsController < ApplicationController
 
   def show
     @post = Post.find(params[:id])
-    render :show
+    render :index
   end
 
   def destroy
     @post = Post.find(params[:id])
-    @post.destroy
-    redirect_to posts_url
+    redirect_to new_posts_url
   end
 
   private
