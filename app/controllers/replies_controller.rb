@@ -2,7 +2,7 @@ class RepliesController < ApplicationController
   def new
     @post = Post.find(params[:post_id])
     @reply = Reply.new
-    render :new
+    render :index
   end
 
   def create
