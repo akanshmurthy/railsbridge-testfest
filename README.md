@@ -1,4 +1,4 @@
-# railsbridge-testathon
+# railsbridge-testfest
 
 The skeleton app.
 
